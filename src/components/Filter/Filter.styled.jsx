@@ -21,7 +21,7 @@ export const Input = styled.input`
   line-height: 1.16;
   width: 300px;
   height: 26px;
-  border: 2px solid #9700ff;
+  border: 2px solid #212121;
   border-radius: 4px;
   outline: none;
   padding: 8px 16px;
