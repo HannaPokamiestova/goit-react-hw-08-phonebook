@@ -9,7 +9,7 @@ import { RestrictedRoute } from 'components/RestrictedRoute';
 import { PrivateRoute } from 'components/PrivateRoute';
 import { refreshUser } from 'redux/auth/authOperations';
 import { Layout } from '../Layout';
-import { useAuth } from 'hooks';
+import { useAuth } from 'hooks/useAuth';
 
 const HomePage = lazy(() => import('pages/Home'));
 const RegisterPage = lazy(() => import('pages/Register'));
