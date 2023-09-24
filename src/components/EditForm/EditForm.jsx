@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { addContact } from 'redux/contacts/contactsOperations';
+
+import { updateContact } from 'redux/contacts/contactsOperations';
+
 import { useSelector } from 'react-redux/es/exports';
 import { selectContacts } from 'redux/contacts/contactsSelectors';
+
 import { toast } from 'react-toastify';
 
 import { nanoid } from 'nanoid';
@@ -16,7 +19,7 @@ import {
   Input,
   StyledErrorMessage,
   Button,
-} from './ContactForm.styled';
+} from './EditForm.styled';
 
 const schema = yup.object().shape({
   name: yup.string().required('This field is required'),
@@ -29,27 +32,38 @@ const schema = yup.object().shape({
 const idInputName = nanoid();
 const idInputNumber = nanoid();
 
-const initialValues = {
-  name: '',
-  number: '',
-};
-
-export const ContactForm = ({ onClose }) => {
-  const contacts = useSelector(selectContacts);
+export const EditForm = ({ onClose, id, value }) => {
   const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
+
+  const initialValues = {
+    name: value.name,
+    number: value.number,
+  };
 
   const handleSubmit = ({ name, number }, { resetForm }) => {
-    const hasName = contacts.some(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
-    );
+    const hasName = contacts.some(contact => {
+      return (
+        contact.name.toLowerCase() === name.toLowerCase() && contact.id !== id
+      );
+    });
 
     if (hasName) {
       toast.error(`${name} is alredy in contacts`);
       return;
     }
+    const data = { id, value: { name, number } };
 
-    dispatch(addContact({ name, number }));
-    onClose();
+    dispatch(updateContact(data))
+      .unwrap()
+      .then(() => {
+        toast.success('Contact edited!');
+        onClose();
+      })
+      .catch(() =>
+        toast.error('Something went wrong...Try reloading the page')
+      );
+
     resetForm();
   };
 
@@ -73,12 +87,12 @@ export const ContactForm = ({ onClose }) => {
         />
         <StyledErrorMessage name="number" component="p" />
 
-        <Button type="submit">Add contact</Button>
+        <Button type="submit">Edit contact</Button>
       </StyledForm>
     </Formik>
   );
 };
 
-ContactForm.propTypes = {
+EditForm.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
